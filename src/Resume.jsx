@@ -9,6 +9,15 @@ export default function Resume() {
   const containerRef = useRef(null);
   const [containerWidth, setContainerWidth] = useState(0);
 
+  const pdfUrl = '/Daniel_Maslia_Resume.pdf';
+
+  const handleDownload = () => {
+      const link = document.createElement('a');
+      link.href = pdfUrl;
+      link.download = 'resume.pdf';
+      link.click();
+  };
+
   useEffect(() => {
     const observer = new ResizeObserver(([entry]) => {
       setContainerWidth(entry.contentRect.width);
@@ -25,18 +34,36 @@ export default function Resume() {
     <div
       ref={containerRef}
       style={{
+        position: 'relative',
+        display: 'inline-block',
         width: "100vw",
         maxWidth: "1000px",
         margin: "0 auto",
       }}>
-      {containerWidth > 0 && (
-        <Document
-          file="/Daniel_Maslia_Resume.pdf"
-          loading={<div style={{ height: '1120px', backgroundColor: '#f7f5f2' }} />}
-        >
-          <Page pageNumber={1} width={containerWidth} />
-        </Document>
-      )}
+      <button
+          onClick={handleDownload}
+          style={{
+              position: 'absolute',
+              top: '57px',
+              right: '400px',
+            zIndex: 10,
+            fontSize: '10px',
+              padding: '4px 4px',
+              background: 'rgb(0, 0, 0)',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer'
+          }}
+      >
+        ⬇
+      </button>
+      <Document
+        file="/Daniel_Maslia_Resume.pdf"
+        loading={<div style={{ height: '1120px', backgroundColor: '#f7f5f2' }} />}
+      >
+        <Page pageNumber={1} width={containerWidth} />
+      </Document>
     </div>
   );
 }
