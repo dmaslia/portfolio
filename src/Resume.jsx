@@ -6,7 +6,7 @@ export default function Resume() {
   return (
     <div>
       <Document file="/Daniel_Maslia_Resume.pdf">
-        <Page pageNumber={1} scale={1.5} />
+        <Page pageNumber={1}       scale={1.7} />
       </Document>
     </div>
   );
