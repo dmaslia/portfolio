@@ -7,27 +7,33 @@ pdfjs.GlobalWorkerOptions.workerSrc =
 
 export default function Resume() {
   const containerRef = useRef(null);
-  const [width, setWidth] = useState(0);
+  const [containerWidth, setContainerWidth] = useState(0);
 
   useEffect(() => {
-    if (!containerRef.current) return;
-
     const observer = new ResizeObserver(([entry]) => {
-      setWidth(entry.contentRect.width);
+      setContainerWidth(entry.contentRect.width);
     });
 
-    observer.observe(containerRef.current);
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
 
     return () => observer.disconnect();
   }, []);
 
   return (
-<div style={{ width: '100vw' }}>
-  <div ref={containerRef} style={{ width: '100%' }}>
-    <Document file="/Daniel_Maslia_Resume.pdf">
-      <Page pageNumber={1} width={width} />
-    </Document>
-  </div>
-</div>
+    <div
+      ref={containerRef}
+      style={{
+        width: "90vw",
+        maxWidth: "800px",
+        margin: "0 auto",
+      }}>
+      {containerWidth > 0 && (
+        <Document file="/Daniel_Maslia_Resume.pdf">
+          <Page pageNumber={1} width={containerWidth} />
+        </Document>
+      )}
+    </div>
   );
 }
