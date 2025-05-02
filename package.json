@@ -21,6 +21,7 @@
     "vite": "^6.3.4"
   },
   "dependencies": {
+    "@react-hook/resize-observer": "^2.0.2",
     "@react-pdf/renderer": "^4.3.0",
     "pdfjs-dist": "^2.12.313",
     "react": "^18.3.1",
