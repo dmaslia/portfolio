@@ -30,7 +30,10 @@ export default function Resume() {
         margin: "0 auto",
       }}>
       {containerWidth > 0 && (
-        <Document file="/Daniel_Maslia_Resume.pdf">
+        <Document
+          file="/Daniel_Maslia_Resume.pdf"
+          loading={<div style={{ height: '1120px', backgroundColor: '#f7f5f2' }} />}
+        >
           <Page pageNumber={1} width={containerWidth} />
         </Document>
       )}
