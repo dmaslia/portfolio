@@ -22,19 +22,12 @@ export default function Resume() {
   }, []);
 
   return (
-    <div
-      ref={containerRef}
-      style={{
-        width: "100%",
-        maxWidth: "100vw",
-        padding: "1rem",
-        margin: "0 auto",
-      }}>
-      {width > 0 && (
-        <Document file="/Daniel_Maslia_Resume.pdf">
-          <Page pageNumber={1} width={width} />
-        </Document>
-      )}
-    </div>
+<div style={{ width: '100vw' }}>
+  <div ref={containerRef} style={{ width: '100%' }}>
+    <Document file="/Daniel_Maslia_Resume.pdf">
+      <Page pageNumber={1} width={width} />
+    </Document>
+  </div>
+</div>
   );
 }
