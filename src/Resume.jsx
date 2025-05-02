@@ -25,8 +25,8 @@ export default function Resume() {
     <div
       ref={containerRef}
       style={{
-        width: "90vw",
-        maxWidth: "800px",
+        width: "100vw",
+        maxWidth: "1000px",
         margin: "0 auto",
       }}>
       {containerWidth > 0 && (
