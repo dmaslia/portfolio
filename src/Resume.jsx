@@ -29,6 +29,8 @@ export default function Resume() {
 
     return () => observer.disconnect();
   }, []);
+  const aspectRatio = 1.294; // 11in / 8.5in
+  const scaledHeight = containerWidth * aspectRatio;
 
   return (
     <div
@@ -43,17 +45,17 @@ export default function Resume() {
       <button
           onClick={handleDownload}
           style={{
-              position: 'absolute',
-              top: '57px',
-              right: '400px',
+            position: 'absolute',
+            top: `${scaledHeight * 0.043}px`,
+            left: `${containerWidth * 0.583}px`, // e.g., 60% across the page
             zIndex: 10,
-            fontSize: '10px',
-              padding: '4px 4px',
-              background: 'rgb(0, 0, 0)',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer'
+            fontSize: `${containerWidth * 0.012}px`, // font size scales too
+            padding: `${containerWidth * 0.005}px ${containerWidth * 0.005}px`,
+            background: '#000',
+            color: 'white',
+            border: 'none',
+            borderRadius: '4px',
+            cursor: 'pointer'
           }}
       >
         ⬇
