@@ -53,7 +53,7 @@ export default function Resume() {
           background: "#000",
           color: "white",
           border: "none",
-          borderRadius: "4px", // square corners (or use "50%" for circle)
+          borderRadius: "0px", // square corners (or use "50%" for circle)
           cursor: "pointer",
           width: `${containerWidth * 0.02}px`,     // set fixed square size
           height: `${containerWidth * 0.02}px`,
