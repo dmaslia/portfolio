@@ -38,12 +38,13 @@ export default function Resume() {
       ref={containerRef}
       style={{
         position: "relative",
-        display: "inline-block",
-        width: "100vw",
+        width: "100%",
         maxWidth: "1000px",
         margin: "0 auto",
+        display: "flex",
+        justifyContent: "center",
       }}>
-            <button
+      <button
         onClick={handleDownload}
         style={{
           position: "absolute",
@@ -55,14 +56,13 @@ export default function Resume() {
           border: "none",
           borderRadius: "0px", // square corners (or use "50%" for circle)
           cursor: "pointer",
-          width: `${containerWidth * 0.02}px`,     // set fixed square size
+          width: `${containerWidth * 0.02}px`, // set fixed square size
           height: `${containerWidth * 0.02}px`,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           padding: 0,
-        }}
-      >
+        }}>
         <Download size={containerWidth * 0.012} />
       </button>
       <Document
