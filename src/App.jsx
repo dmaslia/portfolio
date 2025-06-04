@@ -4,6 +4,7 @@ import "./App.css";
 function Chatbot({ containerWidth }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -13,6 +14,28 @@ function Chatbot({ containerWidth }) {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  const typeMessage = (text, index) => {
+    const words = text.split(" ");
+    let currentText = "";
+    let wordIndex = 0;
+    const typingSpeed = 100;
+
+    const typingInterval = setInterval(() => {
+      if (wordIndex < words.length) {
+        currentText += (wordIndex > 0 ? " " : "") + words[wordIndex];
+        setMessages((prev) => {
+          const newMessages = [...prev];
+          newMessages[index] = { ...newMessages[index], text: currentText };
+          return newMessages;
+        });
+        wordIndex++;
+      } else {
+        clearInterval(typingInterval);
+        setIsTyping(false);
+      }
+    }, typingSpeed);
+  };
 
   const getChatGPTResponse = async (userMessage) => {
     try {
@@ -54,7 +77,7 @@ function Chatbot({ containerWidth }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!input.trim()) return;
+    if (!input.trim() || isTyping) return;
 
     const userMessage = input.trim();
     setInput("");
@@ -62,18 +85,20 @@ function Chatbot({ containerWidth }) {
     // Add user message
     setMessages((prev) => [...prev, { text: userMessage, sender: "user" }]);
 
+    // Prepare for bot response with typing indicator
+    setIsTyping(true);
+    setMessages((prev) => [...prev, { text: "", sender: "bot" }]);
+    const botMessageIndex = messages.length + 1;
+
     try {
       const response = await getChatGPTResponse(userMessage);
-      setMessages((prev) => [...prev, { text: response, sender: "bot" }]);
+      typeMessage(response, botMessageIndex);
     } catch (error) {
       console.error("Error:", error);
-      setMessages((prev) => [
-        ...prev,
-        {
-          text: "I'm sorry, something went wrong. Please try again.",
-          sender: "bot",
-        },
-      ]);
+      typeMessage(
+        "I'm sorry, something went wrong. Please try again.",
+        botMessageIndex
+      );
     }
   };
 
@@ -100,6 +125,9 @@ function Chatbot({ containerWidth }) {
               padding: `${minPadding}px ${minPadding * 1.2}px`,
             }}>
             {message.text}
+            {message.sender === "bot" &&
+              index === messages.length - 1 &&
+              isTyping && <span className="typing-indicator">▋</span>}
           </div>
         ))}
         <div ref={messagesEndRef} />
@@ -115,6 +143,7 @@ function Chatbot({ containerWidth }) {
             fontSize: `${minFontSize}px`,
             padding: `${minPadding}px`,
           }}
+          disabled={isTyping}
         />
         <button
           type="submit"
@@ -122,7 +151,8 @@ function Chatbot({ containerWidth }) {
           style={{
             fontSize: `${minFontSize}px`,
             padding: `${minPadding}px ${minPadding * 1.5}px`,
-          }}>
+          }}
+          disabled={isTyping}>
           Send
         </button>
       </form>
