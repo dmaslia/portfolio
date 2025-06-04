@@ -4,7 +4,6 @@ import "./App.css";
 function Chatbot({ containerWidth }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
-  const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -14,27 +13,6 @@ function Chatbot({ containerWidth }) {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
-
-  const typeMessage = (text, index) => {
-    let currentText = "";
-    let currentIndex = 0;
-    const typingSpeed = 40; // milliseconds per character
-
-    const typingInterval = setInterval(() => {
-      if (currentIndex < text.length) {
-        currentText += text[currentIndex];
-        setMessages((prev) => {
-          const newMessages = [...prev];
-          newMessages[index] = { ...newMessages[index], text: currentText };
-          return newMessages;
-        });
-        currentIndex++;
-      } else {
-        clearInterval(typingInterval);
-        setIsTyping(false);
-      }
-    }, typingSpeed);
-  };
 
   const getChatGPTResponse = async (userMessage) => {
     try {
@@ -57,20 +35,26 @@ function Chatbot({ containerWidth }) {
         }),
       });
 
-      const data = await response.json();
       if (!response.ok) {
-        throw new Error(data.error || "Something went wrong");
+        const errorData = await response.json();
+        console.error("Server error:", errorData);
+        throw new Error(errorData.error || `Server error: ${response.status}`);
       }
+
+      const data = await response.json();
       return data.response;
     } catch (error) {
-      console.error("Error calling chat API:", error);
-      return "I'm sorry, I'm having trouble connecting right now. Please try again later.";
+      console.error("Error details:", error);
+      if (error.message.includes("Failed to fetch")) {
+        return "Cannot connect to the server. Please make sure the backend server is running on port 3001.";
+      }
+      return `Error: ${error.message}. Please try again later.`;
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!input.trim() || isTyping) return;
+    if (!input.trim()) return;
 
     const userMessage = input.trim();
     setInput("");
@@ -78,19 +62,18 @@ function Chatbot({ containerWidth }) {
     // Add user message
     setMessages((prev) => [...prev, { text: userMessage, sender: "user" }]);
 
-    // Get and display bot response
-    setIsTyping(true);
-    setMessages((prev) => [...prev, { text: "", sender: "bot" }]);
-
     try {
       const response = await getChatGPTResponse(userMessage);
-      typeMessage(response, messages.length + 1);
+      setMessages((prev) => [...prev, { text: response, sender: "bot" }]);
     } catch (error) {
       console.error("Error:", error);
-      typeMessage(
-        "I'm sorry, something went wrong. Please try again.",
-        messages.length + 1
-      );
+      setMessages((prev) => [
+        ...prev,
+        {
+          text: "I'm sorry, something went wrong. Please try again.",
+          sender: "bot",
+        },
+      ]);
     }
   };
 
@@ -117,9 +100,6 @@ function Chatbot({ containerWidth }) {
               padding: `${minPadding}px ${minPadding * 1.2}px`,
             }}>
             {message.text}
-            {message.sender === "bot" &&
-              index === messages.length - 1 &&
-              isTyping && <span className="typing-indicator">▋</span>}
           </div>
         ))}
         <div ref={messagesEndRef} />
@@ -135,7 +115,6 @@ function Chatbot({ containerWidth }) {
             fontSize: `${minFontSize}px`,
             padding: `${minPadding}px`,
           }}
-          disabled={isTyping}
         />
         <button
           type="submit"
@@ -143,8 +122,7 @@ function Chatbot({ containerWidth }) {
           style={{
             fontSize: `${minFontSize}px`,
             padding: `${minPadding}px ${minPadding * 1.5}px`,
-          }}
-          disabled={isTyping}>
+          }}>
           Send
         </button>
       </form>
