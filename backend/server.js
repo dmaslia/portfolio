@@ -1,9 +1,10 @@
-const express = require("express");
-const cors = require("cors");
-const { OpenAI } = require("openai");
-require("dotenv").config();
+import express from "express";
+import cors from "cors";
+import OpenAI from "openai";
+import dotenv from "dotenv";
 
-// Validate environment variables
+dotenv.config();
+
 if (!process.env.OPENAI_API_KEY) {
   console.error("Error: OPENAI_API_KEY is not set in environment variables");
   process.exit(1);
@@ -13,12 +14,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Initialize OpenAI with API key from environment variable
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-// Log all incoming requests
 app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
   next();
