@@ -3,8 +3,12 @@ import cors from "cors";
 import OpenAI from "openai";
 import dotenv from "dotenv";
 import axios from "axios"
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 if (!process.env.OPENAI_API_KEY) {
   console.error("Error: OPENAI_API_KEY is not set in environment variables");
@@ -18,6 +22,10 @@ app.use(express.json());
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
+
+// Read the system prompt from file
+const systemPrompt = fs.readFileSync(path.join(__dirname, 'system_prompt.txt'), 'utf8');
+const projectList = fs.readFileSync(path.join(__dirname, 'project_list.txt'), 'utf8');
 
 app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
@@ -56,16 +64,20 @@ app.post("/api/chat", async (req, res) => {
         console.error("Error config:", err.config);
       }
     }
+
     const completion = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
       messages: [
         {
           role: "system",
-          content: `You are Daniel Maslia's AI assistant on danielmaslia.com, his personal portfolio website. You are talking to someone who is visiting this website and interacting with you through the chat interface.
+          content: `${systemPrompt}\n\nYou are Daniel Maslia's AI assistant on danielmaslia.com, his personal portfolio website. You are talking to someone who is visiting this website and interacting with you through the chat interface.
 
 Your goal is to represent Daniel professionally and provide accurate information about his work, skills, and experience. You should be knowledgeable about the website they are currently on and the projects it showcases.
 
-Here is relevant context about Daniel and this website:
+Here is the complete list of Daniel's verified projects and experiences:
+${projectList}
+
+Here is additional relevant context about Daniel and this website:
 \n\n${vectorContext}\n\n
 
 When responding:
@@ -75,6 +87,10 @@ When responding:
 4. Provide specific examples from the projects when relevant
 5. Keep responses concise and helpful
 6. Add new lines where appropriate to separate ideas
+7. NEVER make up or fabricate projects or experiences
+8. ONLY discuss projects that are explicitly listed in the verified project list
+9. If asked about a project not in the verified list, simply state you don't have that information
+10. Present information in a clear, organized format
 
 Remember: You are representing Daniel Maslia's professional profile on his portfolio website and should respond accordingly.`,
         },

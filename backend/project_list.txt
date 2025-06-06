@@ -1,0 +1,54 @@
+VERIFIED PROJECTS AND EXPERIENCES
+This list contains only projects and experiences that have been verified through actual files and documentation in the portfolio.
+
+Personal Portfolio Website (Current)
+- Description: A modern, responsive portfolio website featuring an AI-powered chatbot
+- Technologies: React, Node.js, Express, OpenAI API, Pinecone, Nginx
+- Key Features:
+  * AI chatbot integration with RAG system
+  * Responsive design
+  * Project showcase
+  * Contact form
+  * Dynamic content loading
+
+Professional Experience
+1. HPE NonStop Team Internship
+   - Developed system tool for monitoring semaphore usage
+   - Worked with NonStop proprietary operating system
+   - Analyzed synchronous thread behavior in multithreaded processes
+
+2. The Home Depot - OMSights Project
+   - Full-stack development (React, Node.js, Google Cloud)
+   - Real-time data display from team database
+   - CI/CD pipeline implementation
+   - Used by 30+ faculty members
+
+3. GamerSaloon Administrator Tools
+   - Developed 15+ administrator tools using PHP and SQL
+   - Database management and user balance editing
+   - Zendesk integration for customer service automation
+
+
+4. MDP with Caterpillar Inc
+   - Fleet optimization model development
+   - Web application for construction fleet management
+   - Python-based data analysis and web scraping
+
+5. DryvIQ Research Project
+   - Image recognition for document classification
+   - Machine learning model improvement
+   - Data curation and model evaluation
+
+Academic Projects
+1. Operating Systems Projects
+   - Thread Library Implementation
+   - File System Implementation
+   - Virtual Memory Implementation
+   - Network Stack Implementation
+
+2. GDB Demo Project
+   - Educational project demonstrating GDB debugging capabilities
+   - Memory analysis and stack trace analysis
+
+VERIFICATION NOTE:
+This list is strictly limited to projects and experiences that can be verified through actual files and documentation in the portfolio. Any additional items must be explicitly added by the user and verified through supporting documentation. 

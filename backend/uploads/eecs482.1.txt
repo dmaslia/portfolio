@@ -1,0 +1,28 @@
+Project 1: Thread Library Implementation
+
+Overview:
+This project focuses on implementing a user-level thread library, providing fundamental thread management capabilities without relying on the operating system's native threading support. The implementation includes thread creation, scheduling, and synchronization primitives.
+
+Key Functionality:
+1. Thread Creation and Management
+   - Creation of new threads with custom start functions
+   - Thread scheduling and context switching
+   - Thread termination and cleanup
+
+2. Synchronization Primitives
+   - Mutex locks for mutual exclusion
+   - Condition variables for thread coordination
+   - Implementation of thread-safe operations
+
+3. Thread Control
+   - Thread yield functionality
+   - Thread joining capabilities
+   - Thread state management
+
+Technical Highlights:
+- Custom thread scheduler implementation
+- Efficient context switching mechanism
+- Memory management for thread control blocks
+- Implementation of thread-safe data structures
+
+This project serves as a fundamental building block for understanding thread management and concurrent programming concepts, providing hands-on experience with low-level thread implementation details. 

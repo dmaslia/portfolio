@@ -1,0 +1,37 @@
+Project 2: File System Implementation
+
+Overview:
+This project involves implementing a basic file system with support for file operations, directory management, and data storage. The implementation provides a foundation for understanding how operating systems manage persistent storage and file operations.
+
+Key Functionality:
+1. File System Structure
+   - Implementation of inodes for file metadata
+   - Directory entry management
+   - Free space management
+   - File system initialization and mounting
+
+2. File Operations
+   - File creation and deletion
+   - Reading and writing file data
+   - File size management
+   - File permissions and attributes
+
+3. Directory Operations
+   - Directory creation and deletion
+   - Directory traversal
+   - Path resolution
+   - Directory entry management
+
+4. Data Management
+   - Block allocation and deallocation
+   - Data block management
+   - Buffer cache implementation
+   - Disk I/O operations
+
+Technical Highlights:
+- Implementation of a hierarchical file system structure
+- Efficient block allocation and management
+- Buffer cache for improved performance
+- Robust error handling and recovery mechanisms
+
+This project provides hands-on experience with file system design and implementation, covering essential concepts in operating systems and storage management. 
