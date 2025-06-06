@@ -1,8 +1,10 @@
 import os
 from langchain_community.document_loaders import PyPDFLoader, TextLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.vectorstores import Chroma
+from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_core.documents import Document
+
 
 UPLOAD_DIR = "./uploads"
 VECTOR_DIR = "./vectorstore"
@@ -13,11 +15,13 @@ def load_documents():
         filepath = os.path.join(UPLOAD_DIR, filename)
         if filename.endswith(".pdf"):
             loader = PyPDFLoader(filepath)
+            pages = loader.load()
+            # Combine all pages into a single string to preserve flow
+            full_text = "\n".join([p.page_content for p in pages])
+            docs.append(Document(page_content=full_text))
         elif filename.endswith(".txt"):
             loader = TextLoader(filepath)
-        else:
-            continue  # skip unsupported
-        docs.extend(loader.load())
+            docs.extend(loader.load())
     return docs
 
 def embed_and_store():
@@ -25,18 +29,25 @@ def embed_and_store():
     docs = load_documents()
 
     print(f"[*] Loaded {len(docs)} documents. Splitting into chunks...")
-    splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
+    
+    splitter = RecursiveCharacterTextSplitter(
+        chunk_size=300,
+        chunk_overlap=30,
+        separators=["\n\n", "\n", ".", " "],  # preserve paragraphs and bullets
+    )
+
     chunks = splitter.split_documents(docs)
 
     print(f"[*] Generated {len(chunks)} chunks. Embedding...")
     embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/paraphrase-MiniLM-L6-v2")
 
     print(f"[*] Storing into Chroma at {VECTOR_DIR}")
-    Chroma.from_documents(
+    vs = Chroma.from_documents(
         documents=chunks,
         embedding=embeddings,
-        persist_directory=VECTOR_DIR
+        persist_directory=VECTOR_DIR,
     )
+    print("✅ Stored chunks:", vs._collection.count())
 
     print("[✓] Done. Vectorstore saved.")
 

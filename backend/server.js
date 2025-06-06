@@ -2,9 +2,9 @@ import express from "express";
 import cors from "cors";
 import OpenAI from "openai";
 import dotenv from "dotenv";
-import { execSync } from "child_process";
+import axios from "axios"
 
-dotenv.config();
+
 
 if (!process.env.OPENAI_API_KEY) {
   console.error("Error: OPENAI_API_KEY is not set in environment variables");
@@ -36,26 +36,51 @@ app.post("/api/chat", async (req, res) => {
 
     // 🔍 Call Python script to get relevant context
     let vectorContext = "";
-    try {
-      const result = execSync(`python3 query_vectorstore.py "${userMessage}"`, {
-        encoding: "utf-8",
-      });
-      const docs = JSON.parse(result);
-      vectorContext = docs.join("\n---\n");
-    } catch (err) {
-      console.error("Vector store query failed:", err);
-    }
 
+    try {
+      const response = await axios.post("http://localhost:8000/query", {
+        query: userMessage,
+      }, {
+        timeout: 5000,  // 5 seconds
+      });
+      const docs = response.data; // This should be a list of strings
+      vectorContext = docs.join("\n---\n"); // Combine them if needed
+    } catch (err) {
+      console.error("Vector store query failed:", err.message);
+      if (err.response) {
+        console.error("Status:", err.response.status);
+        console.error("Response:", err.response.data);
+      } else if (err.request) {
+        console.error("No response received:", err.request);
+      } else {
+        console.error("Error config:", err.config);
+      }
+    }
     const completion = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
       messages: [
         {
           role: "system",
-          content: `You are a helpful assistant representing Daniel Maslia. Below is context retrieved from his documents:\n\n${vectorContext}`,
+          content: `You are Daniel Maslia's AI assistant on danielmaslia.com, his personal portfolio website. You are talking to someone who is visiting this website and interacting with you through the chat interface.
+
+Your goal is to represent Daniel professionally and provide accurate information about his work, skills, and experience. You should be knowledgeable about the website they are currently on and the projects it showcases.
+
+Here is relevant context about Daniel and this website:
+\n\n${vectorContext}\n\n
+
+When responding:
+1. Be professional but friendly
+2. Reference that you are part of danielmaslia.com
+3. Focus on technical accuracy
+4. Provide specific examples from the projects when relevant
+5. Keep responses concise and helpful
+6. Add new lines where appropriate to separate ideas
+
+Remember: You are representing Daniel Maslia's professional profile on his portfolio website and should respond accordingly.`,
         },
         ...messages,
       ],
-      max_tokens: 150,
+      max_tokens: 1024,
     });
 
     res.json({ response: completion.choices[0].message.content });

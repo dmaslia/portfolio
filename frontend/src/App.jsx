@@ -15,31 +15,9 @@ function Chatbot({ containerWidth }) {
     scrollToBottom();
   }, [messages]);
 
-  const typeMessage = (text, index) => {
-    const words = text.split(" ");
-    let currentText = "";
-    let wordIndex = 0;
-    const typingSpeed = 100;
-
-    const typingInterval = setInterval(() => {
-      if (wordIndex < words.length) {
-        currentText += (wordIndex > 0 ? " " : "") + words[wordIndex];
-        setMessages((prev) => {
-          const newMessages = [...prev];
-          newMessages[index] = { ...newMessages[index], text: currentText };
-          return newMessages;
-        });
-        wordIndex++;
-      } else {
-        clearInterval(typingInterval);
-        setIsTyping(false);
-      }
-    }, typingSpeed);
-  };
-
   const getChatGPTResponse = async (userMessage) => {
     try {
-      const response = await fetch("http://localhost:3001/api/chat", {
+      const response = await fetch("/api/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -85,20 +63,29 @@ function Chatbot({ containerWidth }) {
     // Add user message
     setMessages((prev) => [...prev, { text: userMessage, sender: "user" }]);
 
-    // Prepare for bot response with typing indicator
+    // Prepare for bot response
     setIsTyping(true);
     setMessages((prev) => [...prev, { text: "", sender: "bot" }]);
-    const botMessageIndex = messages.length + 1;
 
     try {
       const response = await getChatGPTResponse(userMessage);
-      typeMessage(response, botMessageIndex);
+      setMessages((prev) => {
+        const newMessages = [...prev];
+        newMessages[newMessages.length - 1] = { text: response, sender: "bot" };
+        return newMessages;
+      });
     } catch (error) {
       console.error("Error:", error);
-      typeMessage(
-        "I'm sorry, something went wrong. Please try again.",
-        botMessageIndex
-      );
+      setMessages((prev) => {
+        const newMessages = [...prev];
+        newMessages[newMessages.length - 1] = {
+          text: "I'm sorry, something went wrong. Please try again.",
+          sender: "bot",
+        };
+        return newMessages;
+      });
+    } finally {
+      setIsTyping(false);
     }
   };
 
@@ -122,7 +109,10 @@ function Chatbot({ containerWidth }) {
             }`}
             style={{
               fontSize: `${minFontSize}px`,
+              whiteSpace: "pre-wrap",
               padding: `${minPadding}px ${minPadding * 1.2}px`,
+              alignSelf: message.sender === "user" ? "flex-end" : "flex-start",
+              textAlign: message.sender === "user" ? "right" : "left",
             }}>
             {message.text}
             {message.sender === "bot" &&

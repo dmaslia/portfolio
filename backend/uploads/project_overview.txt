@@ -1,0 +1,187 @@
+# Portfolio Project Technical Overview
+
+## System Architecture
+
+### Frontend Stack
+React 19.1.0 + Vite 6.3.5
+- Production build via Vite
+- Nginx static file serving
+- Responsive design with dynamic sizing
+- Dual-view: Resume + RAG Chatbot
+
+### Backend Stack
+Express 5.1.0 + FastAPI
+- ES modules architecture
+- OpenAI API integration
+- Python RAG service
+- dotenv for config
+- CORS security
+
+### Deployment
+Ubuntu VPS + Nginx
+- SSL/TLS via Let's Encrypt
+- PM2 process management
+- Automated deployment
+- Resource monitoring
+
+## RAG Implementation
+
+### Document Processing
+PDF/TXT Support:
+- PyPDFLoader for PDFs
+- TextLoader for TXT
+- Auto-type detection
+- Text preservation
+
+Chunking Strategy:
+- Size: 300 chars
+- Overlap: 30 chars
+- Separators: ["\n\n", "\n", ".", " "]
+- Preserves paragraphs
+
+### Vector Store
+Chroma + HuggingFace:
+- Model: sentence-transformers/paraphrase-MiniLM-L6-v2
+- Persistent storage
+- Efficient search
+- Metadata tracking
+
+### Query Flow
+1. Express receives query
+2. Forwards to FastAPI
+3. Vector search (k=15)
+4. Context formatting
+5. OpenAI completion
+
+Search Details:
+- Chroma similarity
+- Context management
+- 5s timeout
+- Error handling
+- Fallback system
+
+### Prompt Design
+System Context:
+- Daniel Maslia role
+- Professional tone
+- Format guidelines
+- Error handling
+- Context injection
+
+RAG Integration:
+- Dynamic context
+- Separator formatting
+- Response guidelines
+- Error fallbacks
+- Timeout handling
+
+Generation:
+- GPT-3.5-turbo
+- 1024 max tokens
+- Context awareness
+- Error handling
+- Format control
+
+## Infrastructure
+
+### Nginx Setup
+- API reverse proxy
+- Static file serving
+- SSL termination
+- Cache config
+- Security headers
+- Rate limiting
+
+### VPS Configuration
+- Ubuntu server
+- UFW firewall
+- System tuning
+- Resource tracking
+- Backup system
+
+### Process Management
+- PM2 for Node.js
+- FastAPI service
+- Auto-restart
+- Log handling
+- Performance tracking
+
+## Security
+
+### API Protection
+- Env variables
+- API key management
+- Rate limiting
+- Request validation
+- Error handling
+
+### Infrastructure Security
+- SSL/TLS
+- Firewall rules
+- Security updates
+- Access control
+- Monitoring
+
+## Performance
+
+### Frontend
+- Code splitting
+- Lazy loading
+- Asset optimization
+- Cache strategy
+- Responsive design
+
+### Backend
+- Query optimization
+- Cache system
+- Connection pooling
+- Error handling
+- Resource management
+
+### RAG System
+- Vector search
+- Context windows
+- Query caching
+- Batch processing
+- Resource usage
+
+## Monitoring
+
+### System Tracking
+- Resource usage
+- Error logs
+- Performance data
+- Security monitoring
+- Uptime tracking
+
+### Maintenance
+- Regular updates
+- Backup system
+- Log rotation
+- Performance tuning
+- Security patches
+
+## Future Plans
+
+### ML Enhancements
+- RAG improvements
+- Context management
+- Relevance scoring
+- Multi-modal support
+- Fine-tuning
+
+### Infrastructure
+- Load balancing
+- CDN integration
+- Auto-scaling
+- Enhanced monitoring
+- Backup automation
+
+### Features
+- User auth
+- Analytics
+- Chat features
+- Multi-language
+- Advanced RAG
+
+This project demonstrates modern web tech, ML integration, and cloud infrastructure expertise. It maintains high standards for security, performance, and user experience. 

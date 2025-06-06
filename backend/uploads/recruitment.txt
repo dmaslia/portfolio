@@ -1,0 +1,23 @@
+
+HPE
+I worked on the NonStop team at HPE. During my internship, I learned the ins and outs of the NonStop proprietary operating system, along with the scripting and coding languages that are used in the operating system codebase. To assist with the latest release of the OS, I developed a system tool that monitors semaphore usage across the operating system. This tool gave the team key insights into the way synchronous threads behave within a multithreaded process.
+
+THD Position
+I served as a summer intern for The Home Depot, as a software engineer. Through this program, I worked with a team of mentors as well as two other interns. From the ground up, we completed a site (OMSights) that displays real, updated data from the teams database. I completed back end and front end tasks, using React, Nodejs, and Google Cloud. I also learned CI/CD pipelining, the Agile workflow process, and cloud computing. This tool was utilized by over 30 faculty, and we showcased the project to other Home Depot teams, which generated cross-team interest and motivation for adoption.
+
+GS Position
+I collaborated on a team of developers to create over 15 administrator tools. I used PHP and SQL to build tools that made tasks like managing the database, editing user balances, and creating tournaments more efficient. I also integrated Zendesk into their customer service, which automated customer service actions and deletion of user accounts.
+
+UM Position
+I assisted undergraduate students and professors for Engineering 100: Robotics Mechanisms. This included teaching students how to write professional, specific, and detailed memos for their robotics project. I also supervised students in the designing, building, and programming of their robotics project, and provided advice for better methods to design their product around the real-world problem they were attempting to solve.
+
+
+MDP
+Through the University of Michigan's Multidisciplinary Design Program and Caterpillar Inc, I am working in a team of students to create an optimization model and web application that informs construction fleet managers of strategies to best utilize their fleet. Given user inputted fleet criteria and constraints, the model outputs actions that will allow the user to minimize cost and fleet emissions while maximizing fleet productivity. We are working with Python libraries such as scikit and selenium for web scraping and data analysis.
+
+DryvIQ
+I studied image recognition and its application to data management. Through this project, I worked with a team to improve a machine learning model that can distinguish photos that contain different types of documents. The project is titled "Data Curation and Model Evaluation for Machine Learning Models." I conducted this research through the University of Michigan's Undergraduate Research Opportunity Program.
+
+
+Why this career/job
+I am a senior studying computer science. Since I was in 7th grade, I have had a deep passion for learning about all things computer science. In every computer science course I have taken, I have found myself constantly entertained by the course content. I'll often spend hours just exploring course content, not because I was required to do so, but because I was curious. It's this kind of passion that has motivated my successes in my undergraduate career. With my curious and driven personality, not only am I constantly willing to learn new things, but I also serve as motivation and inspiration for my fellow teammates.
