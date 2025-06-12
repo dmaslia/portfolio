@@ -498,5 +498,15 @@
     "timestamp": "2025-06-12T21:14:33.982Z",
     "userMessage": "who is daniel maslia",
     "botResponse": "```json\n{\n  \"text\": \"Daniel Maslia is a recent graduate with a Bachelor of Science in Engineering (BSE) in Computer Science from the University of Michigan, Ann Arbor. He graduated on May 1, 2025, with a Cumulative GPA of 3.923. Daniel also holds a minor in Business Administration. His academic achievements include Summa Cum Laude honors and participation in the Engineering Honors Program. For more details, you can view his complete transcript.\",\n  \"buttons\": [\n    {\n      \"text\": \"Academic Transcript\",\n      \"url\": \"/Daniel_Maslia_Transcript.pdf\"\n    }\n  ]\n}\n```"
+  },
+  {
+    "timestamp": "2025-06-12T21:57:34.289Z",
+    "userMessage": "who is daniel maslia",
+    "botResponse": "```json\n{\n  \"text\": \"Daniel Maslia is a highly accomplished individual with a Bachelor of Science in Engineering (BSE) in Computer Science and a minor in Business Administration. He graduated from the University of Michigan - Ann Arbor with honors and multiple awards. Daniel has completed impressive academic coursework and been involved in various projects and professional experiences.\",\n  \"buttons\": []\n}\n```  "
+  },
+  {
+    "timestamp": "2025-06-12T21:57:43.165Z",
+    "userMessage": "van i see his transcript",
+    "botResponse": "```json\n{\n  \"text\": \"You can view Daniel Maslia's academic transcript here:\",\n  \"buttons\": [\n    {\n      \"text\": \"View Transcript\",\n      \"url\": \"/Daniel_Maslia_Transcript.pdf\"\n    }\n  ]\n}\n```"
   }
 ]
