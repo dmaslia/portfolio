@@ -6,6 +6,24 @@ function Chatbot({ containerWidth }) {
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
+  const containerRef = useRef(null);
+
+  // Calculate available height for messages
+  const [availableHeight, setAvailableHeight] = useState(0);
+
+  useEffect(() => {
+    const updateHeight = () => {
+      if (containerRef.current) {
+        const containerHeight = containerRef.current.clientHeight;
+        const inputHeight = containerRef.current.querySelector('.chat-input-form').clientHeight;
+        setAvailableHeight(containerHeight - inputHeight - 40); // 40px for padding
+      }
+    };
+
+    updateHeight();
+    window.addEventListener('resize', updateHeight);
+    return () => window.removeEventListener('resize', updateHeight);
+  }, []);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -88,19 +106,37 @@ function Chatbot({ containerWidth }) {
       setIsTyping(false);
     }
   };
+  
+  function extractJSONFromMessage(text) {
+    const match = text.match(/```(?:json)?\s*([\s\S]*?)```/i);
+    if (match && match[1]) {
+      try {
+        return JSON.parse(match[1]);
+      } catch (e) {
+        console.error("❌ JSON parse error:", e);
+      }
+    }
+    return null;
+  }
+  
+
 
   // Calculate minimum font size based on container width
-  const minFontSize = Math.max(containerWidth * 0.018, 16); // Minimum 16px
+  const minFontSize = Math.max(containerWidth * 0.014, 14); // Reduced from 0.018 to 0.014 and minimum from 16 to 14
   const minPadding = Math.max(containerWidth * 0.015, 12); // Minimum 12px
 
   return (
     <div
+      ref={containerRef}
       className="chatbot-container"
       style={{
         width: containerWidth,
         maxWidth: "1000px",
       }}>
-      <div className="chat-messages">
+      <div 
+        className="chat-messages"
+        style={{ height: availableHeight }}
+      >
         {messages.map((message, index) => (
           <div
             key={index}
@@ -114,7 +150,29 @@ function Chatbot({ containerWidth }) {
               alignSelf: message.sender === "user" ? "flex-end" : "flex-start",
               textAlign: message.sender === "user" ? "right" : "left",
             }}>
-            {message.text}
+            {/* parsing buttons for responses with buttons */} 
+
+              {(() => {
+                const parsed = extractJSONFromMessage(message.text);
+                if (parsed) {
+                  return (
+                    <>
+                      <div>{parsed.text}</div>
+                      {parsed.buttons?.map((btn, i) => (
+                        <a 
+                          href={btn.url} 
+                          key={i}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <button className="chatbot-button">{btn.text}</button>
+                        </a>
+                      ))}
+                    </>
+                  );
+                }
+                return <>{message.text}</>;
+              })()}
             {message.sender === "bot" &&
               index === messages.length - 1 &&
               isTyping && <span className="typing-indicator">▋</span>}
@@ -173,34 +231,7 @@ function App() {
 
   return (
     <div ref={containerRef} className="app-container">
-      <button
-        onClick={toggleView}
-        style={{
-          position: "fixed",
-          top: "20px",
-          right: "20px",
-          background: "#000",
-          color: "white",
-          border: "none",
-          borderRadius: "0px",
-          cursor: "pointer",
-          width: `${containerWidth * 0.02}px`,
-          height: `${containerWidth * 0.02}px`,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: 0,
-          zIndex: 1000,
-        }}>
-        <span style={{ fontSize: `${containerWidth * 0.012}px` }}>
-          {currentView === "resume" ? "C" : "R"}
-        </span>
-      </button>
-      {currentView === "resume" ? (
-        <Resume />
-      ) : (
         <Chatbot containerWidth={containerWidth} />
-      )}
     </div>
   );
 }

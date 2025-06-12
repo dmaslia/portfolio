@@ -11,17 +11,35 @@ VECTOR_DIR = "./vectorstore"
 
 def load_documents():
     docs = []
+    # First load transcript.txt if it exists
+    transcript_path = os.path.join(UPLOAD_DIR, "transcript.txt")
+    if os.path.exists(transcript_path):
+        loader = TextLoader(transcript_path)
+        transcript_docs = loader.load()
+        # Add metadata to indicate this is from transcript
+        for doc in transcript_docs:
+            doc.metadata["source"] = "transcript"
+            doc.metadata["priority"] = 1
+        docs.extend(transcript_docs)
+    
+    # Then load other documents
     for filename in os.listdir(UPLOAD_DIR):
+        if filename == "transcript.txt":
+            continue  # Skip transcript as we already loaded it
         filepath = os.path.join(UPLOAD_DIR, filename)
         if filename.endswith(".pdf"):
             loader = PyPDFLoader(filepath)
             pages = loader.load()
             # Combine all pages into a single string to preserve flow
             full_text = "\n".join([p.page_content for p in pages])
-            docs.append(Document(page_content=full_text))
+            docs.append(Document(page_content=full_text, metadata={"source": filename, "priority": 0}))
         elif filename.endswith(".txt"):
             loader = TextLoader(filepath)
-            docs.extend(loader.load())
+            other_docs = loader.load()
+            for doc in other_docs:
+                doc.metadata["source"] = filename
+                doc.metadata["priority"] = 0
+            docs.extend(other_docs)
     return docs
 
 def embed_and_store():
@@ -31,9 +49,9 @@ def embed_and_store():
     print(f"[*] Loaded {len(docs)} documents. Splitting into chunks...")
     
     splitter = RecursiveCharacterTextSplitter(
-        chunk_size=300,
-        chunk_overlap=30,
-        separators=["\n\n", "\n", ".", " "],  # preserve paragraphs and bullets
+        chunk_size=1000,
+        chunk_overlap=200,
+        separators=["\n\n---\n\n", "\n\n", "\n", ".", " "],
     )
 
     chunks = splitter.split_documents(docs)

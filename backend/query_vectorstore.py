@@ -21,7 +21,7 @@ def run_query(query_text):
         embedding_function=embeddings
     )
     
-    results = vectorstore.max_marginal_relevance_search(query_text, k=20, fetch_k=20)
+    results = vectorstore.similarity_search(query_text, k=5)
     
     print(f"[RESULT] Retrieved {len(results)} documents", file=sys.stderr)
     for i, doc in enumerate(results):

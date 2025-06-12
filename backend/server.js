@@ -27,6 +27,45 @@ const openai = new OpenAI({
 const systemPrompt = fs.readFileSync(path.join(__dirname, 'system_prompt.txt'), 'utf8');
 const projectList = fs.readFileSync(path.join(__dirname, 'project_list.txt'), 'utf8');
 
+// Create logs directory if it doesn't exist
+const logsDir = path.join(__dirname, 'logs');
+if (!fs.existsSync(logsDir)) {
+  fs.mkdirSync(logsDir);
+}
+
+// Function to log chat messages
+const logChatMessage = (message, response) => {
+  const timestamp = new Date().toISOString();
+  const logEntry = {
+    timestamp,
+    userMessage: message,
+    botResponse: response
+  };
+  
+  const logFile = path.join(logsDir, 'chat_history.json');
+  let logs = [];
+  
+  // Read existing logs if file exists
+  if (fs.existsSync(logFile)) {
+    try {
+      const fileContent = fs.readFileSync(logFile, 'utf8');
+      logs = JSON.parse(fileContent);
+    } catch (error) {
+      console.error('Error reading log file:', error);
+    }
+  }
+  
+  // Add new log entry
+  logs.push(logEntry);
+  
+  // Write back to file
+  try {
+    fs.writeFileSync(logFile, JSON.stringify(logs, null, 2));
+  } catch (error) {
+    console.error('Error writing to log file:', error);
+  }
+};
+
 app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
   next();
@@ -70,40 +109,39 @@ app.post("/api/chat", async (req, res) => {
       messages: [
         {
           role: "system",
-          content: `${systemPrompt}\n\nYou are Daniel Maslia's AI assistant on danielmaslia.com, his personal portfolio website. You are talking to someone who is visiting this website and interacting with you through the chat interface.
-
-Your goal is to represent Daniel professionally and provide accurate information about his work, skills, and experience. You should be knowledgeable about the website they are currently on and the projects it showcases.
-
-Here is the complete list of Daniel's verified projects and experiences:
-${projectList}
-
-Here is additional relevant context about Daniel and this website:
-\n\n${vectorContext}\n\n
-
-When responding:
-1. Be professional but friendly
-2. Reference that you are part of danielmaslia.com
-3. Focus on technical accuracy
-4. Provide specific examples from the projects when relevant
-5. Keep responses concise and helpful
-6. Add new lines where appropriate to separate ideas
-7. NEVER make up or fabricate projects or experiences
-8. ONLY discuss projects that are explicitly listed in the verified project list
-9. If asked about a project not in the verified list, simply state you don't have that information
-10. Present information in a clear, organized format
-
-Remember: You are representing Daniel Maslia's professional profile on his portfolio website and should respond accordingly.`,
+          content: `${systemPrompt}\n\nHere is the complete list of Daniel's verified projects and experiences:\n${projectList}\n\nHere is additional relevant context about Daniel and this website:\n${vectorContext}`,
         },
         ...messages,
       ],
       max_tokens: 1024,
     });
 
-    res.json({ response: completion.choices[0].message.content });
+    const botResponse = completion.choices[0].message.content;
+    
+    // Log the chat interaction
+    logChatMessage(userMessage, botResponse);
+
+    res.json({ response: botResponse });
 
   } catch (error) {
     console.error("Error in /api/chat:", error);
     res.status(500).json({ error: "Something went wrong", details: error.message });
+  }
+});
+
+// Add endpoint to view chat history
+app.get("/api/chat-history", (req, res) => {
+  try {
+    const logFile = path.join(logsDir, 'chat_history.json');
+    if (!fs.existsSync(logFile)) {
+      return res.json([]);
+    }
+    const fileContent = fs.readFileSync(logFile, 'utf8');
+    const logs = JSON.parse(fileContent);
+    res.json(logs);
+  } catch (error) {
+    console.error("Error reading chat history:", error);
+    res.status(500).json({ error: "Failed to read chat history" });
   }
 });
 

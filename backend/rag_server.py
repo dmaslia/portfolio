@@ -25,8 +25,19 @@ class QueryInput(BaseModel):
 
 @app.post("/query")
 def query_vectorstore(input: QueryInput):
-    results = vectorstore.similarity_search(input.query, k=15)
-    texts = [doc.page_content for doc in results]
+    # First try to get transcript-specific results
+    results = vectorstore.similarity_search(
+        input.query,
+        k=20,  # Get more results initially
+        filter={"source": "transcript"}  # Only get transcript chunks
+    )
+    
+    # If no transcript results, fall back to all documents
+    if not results:
+        results = vectorstore.similarity_search(input.query, k=10)
+    
+    # Take top 10 most relevant results
+    texts = [doc.page_content for doc in results[:10]]
     return texts
 
 # Optional: allow uvicorn to run directly
