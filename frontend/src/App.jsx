@@ -15,14 +15,15 @@ function Chatbot({ containerWidth }) {
     const updateHeight = () => {
       if (containerRef.current) {
         const containerHeight = containerRef.current.clientHeight;
-        const inputHeight = containerRef.current.querySelector('.chat-input-form').clientHeight;
+        const inputHeight =
+          containerRef.current.querySelector(".chat-input-form").clientHeight;
         setAvailableHeight(containerHeight - inputHeight - 40); // 40px for padding
       }
     };
 
     updateHeight();
-    window.addEventListener('resize', updateHeight);
-    return () => window.removeEventListener('resize', updateHeight);
+    window.addEventListener("resize", updateHeight);
+    return () => window.removeEventListener("resize", updateHeight);
   }, []);
 
   const scrollToBottom = () => {
@@ -106,7 +107,7 @@ function Chatbot({ containerWidth }) {
       setIsTyping(false);
     }
   };
-  
+
   function extractJSONFromMessage(text) {
     const match = text.match(/```(?:json)?\s*([\s\S]*?)```/i);
     if (match && match[1]) {
@@ -118,8 +119,6 @@ function Chatbot({ containerWidth }) {
     }
     return null;
   }
-  
-
 
   // Calculate minimum font size based on container width
   const minFontSize = Math.max(containerWidth * 0.014, 14); // Reduced from 0.018 to 0.014 and minimum from 16 to 14
@@ -133,10 +132,7 @@ function Chatbot({ containerWidth }) {
         width: containerWidth,
         maxWidth: "1000px",
       }}>
-      <div 
-        className="chat-messages"
-        style={{ height: availableHeight }}
-      >
+      <div className="chat-messages" style={{ height: availableHeight }}>
         {messages.map((message, index) => (
           <div
             key={index}
@@ -150,29 +146,28 @@ function Chatbot({ containerWidth }) {
               alignSelf: message.sender === "user" ? "flex-end" : "flex-start",
               textAlign: message.sender === "user" ? "right" : "left",
             }}>
-            {/* parsing buttons for responses with buttons */} 
+            {/* parsing buttons for responses with buttons */}
 
-              {(() => {
-                const parsed = extractJSONFromMessage(message.text);
-                if (parsed) {
-                  return (
-                    <>
-                      <div>{parsed.text}</div>
-                      {parsed.buttons?.map((btn, i) => (
-                        <a 
-                          href={btn.url} 
-                          key={i}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          <button className="chatbot-button">{btn.text}</button>
-                        </a>
-                      ))}
-                    </>
-                  );
-                }
-                return <>{message.text}</>;
-              })()}
+            {(() => {
+              const parsed = extractJSONFromMessage(message.text);
+              if (parsed) {
+                return (
+                  <>
+                    <div>{parsed.text}</div>
+                    {parsed.buttons?.map((btn, i) => (
+                      <a
+                        href={btn.url}
+                        key={i}
+                        target="_blank"
+                        rel="noopener noreferrer">
+                        <button className="chatbot-button">{btn.text}</button>
+                      </a>
+                    ))}
+                  </>
+                );
+              }
+              return <>{message.text}</>;
+            })()}
             {message.sender === "bot" &&
               index === messages.length - 1 &&
               isTyping && <span className="typing-indicator">▋</span>}
@@ -211,7 +206,7 @@ function Chatbot({ containerWidth }) {
 function App() {
   const [currentView, setCurrentView] = useState("resume");
   const containerRef = useRef(null);
-  const [containerWidth, setContainerWidth] = useState(0);
+  const [containerWidth, setContainerWidth] = useState(1000);
 
   useEffect(() => {
     const observer = new ResizeObserver(([entry]) => {
@@ -231,7 +226,7 @@ function App() {
 
   return (
     <div ref={containerRef} className="app-container">
-        <Chatbot containerWidth={containerWidth} />
+      <Chatbot containerWidth={containerWidth} />
     </div>
   );
 }

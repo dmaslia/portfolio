@@ -52,7 +52,6 @@
   overflow: hidden;
 }
 
-
 .toggle-button {
   position: fixed;
   top: 20px;
@@ -85,7 +84,6 @@
   overflow: hidden; /* prevent internal scroll */
 }
 
-
 .chat-header {
   padding: 10px 20px;
   border-bottom: 1px solid #eee;
@@ -108,7 +106,8 @@
 }
 
 .chat-messages {
-  flex: 1;
+  width: 100%;
+  max-width: 1000px;
   display: flex;
   flex-direction: column;
   gap: 20px;
