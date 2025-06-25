@@ -1,0 +1,10 @@
+backend/vectorstore
+├── 1be8dd06-9754-498f-9e94-0e8e2a5d1bf4
+│   ├── data_level0.bin
+│   ├── header.bin
+│   ├── index_metadata.pickle
+│   ├── length.bin
+│   └── link_lists.bin
+└── chroma.sqlite3
+
+2 directories, 6 files

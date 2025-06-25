@@ -1,0 +1,29 @@
+version: "3.8"
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "4173:4173"
+    depends_on:
+      - backend-node
+      - backend-fastapi
+
+  backend-node:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "3003:3003"
+    environment:
+      - NODE_ENV=production
+    # Add other env vars as needed
+
+  backend-fastapi:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.fastapi
+    ports:
+      - "8003:8003"
+    # Add environment variables as needed

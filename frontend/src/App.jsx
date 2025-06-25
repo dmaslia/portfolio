@@ -1,10 +1,13 @@
 import React, { useState, useRef, useEffect } from "react";
 import Resume from "./components/Resume";
+import AIPageRenderer from "./components/AIPageRenderer";
 import "./App.css";
 function Chatbot({ containerWidth }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [overlayContent, setOverlayContent] = useState(null);
+  const [isMinimized, setIsMinimized] = useState(false);
   const messagesEndRef = useRef(null);
   const containerRef = useRef(null);
 
@@ -88,11 +91,42 @@ function Chatbot({ containerWidth }) {
 
     try {
       const response = await getChatGPTResponse(userMessage);
-      setMessages((prev) => {
-        const newMessages = [...prev];
-        newMessages[newMessages.length - 1] = { text: response, sender: "bot" };
-        return newMessages;
-      });
+      console.log("Bot response:", response); // Debug log
+
+      // Check for HTML content first
+      const htmlBlock = extractHTMLBlock(response);
+      console.log("Extracted HTML block:", htmlBlock); // Debug log
+
+      if (htmlBlock) {
+        // Ensure we have valid HTML before setting it
+        if (typeof htmlBlock === "string" && htmlBlock.trim().length > 0) {
+          setOverlayContent(htmlBlock);
+          if (!isMinimized) {
+            setIsMinimized(true);
+          }
+          // Add a system message about the update
+          setMessages((prev) => {
+            const newMessages = [...prev];
+            newMessages[newMessages.length - 1] = {
+              text: "I've updated the webpage based on your request.",
+              sender: "bot",
+            };
+            return newMessages;
+          });
+        } else {
+          console.error("Invalid HTML block extracted:", htmlBlock);
+          throw new Error("Invalid HTML content");
+        }
+      } else {
+        setMessages((prev) => {
+          const newMessages = [...prev];
+          newMessages[newMessages.length - 1] = {
+            text: response,
+            sender: "bot",
+          };
+          return newMessages;
+        });
+      }
     } catch (error) {
       console.error("Error:", error);
       setMessages((prev) => {
@@ -120,86 +154,96 @@ function Chatbot({ containerWidth }) {
     return null;
   }
 
+  function extractHTMLBlock(text) {
+    if (!text || typeof text !== "string") return null;
+
+    const match = text.match(/```(?:html)?\s*([\s\S]*?)```/i);
+    if (!match) return null;
+
+    return match[1].trim();
+  }
   // Calculate minimum font size based on container width
   const minFontSize = Math.max(containerWidth * 0.014, 14); // Reduced from 0.018 to 0.014 and minimum from 16 to 14
   const minPadding = Math.max(containerWidth * 0.015, 12); // Minimum 12px
 
-  return (
-    <div
-      ref={containerRef}
-      className="chatbot-container"
-      style={{
-        width: containerWidth,
-        maxWidth: "1000px",
-      }}>
-      <div className="chat-messages" style={{ height: availableHeight }}>
-        {messages.map((message, index) => (
-          <div
-            key={index}
-            className={`message ${
-              message.sender === "user" ? "user-message" : "bot-message"
-            }`}
-            style={{
-              fontSize: `${minFontSize}px`,
-              whiteSpace: "pre-wrap",
-              padding: `${minPadding}px ${minPadding * 1.2}px`,
-              alignSelf: message.sender === "user" ? "flex-end" : "flex-start",
-              textAlign: message.sender === "user" ? "right" : "left",
-            }}>
-            {/* parsing buttons for responses with buttons */}
+  const handleCloseOverlay = () => {
+    setOverlayContent(null);
+    setIsMinimized(false);
+  };
 
-            {(() => {
-              const parsed = extractJSONFromMessage(message.text);
-              if (parsed) {
-                return (
-                  <>
-                    <div>{parsed.text}</div>
-                    {parsed.buttons?.map((btn, i) => (
-                      <a
-                        href={btn.url}
-                        key={i}
-                        target="_blank"
-                        rel="noopener noreferrer">
-                        <button className="chatbot-button">{btn.text}</button>
-                      </a>
-                    ))}
-                  </>
-                );
-              }
-              return <>{message.text}</>;
-            })()}
-            {message.sender === "bot" &&
-              index === messages.length - 1 &&
-              isTyping && <span className="typing-indicator">▋</span>}
-          </div>
-        ))}
-        <div ref={messagesEndRef} />
+  const handleMaximize = () => {
+    setIsMinimized(false);
+  };
+
+  return (
+    <>
+      <div
+        ref={containerRef}
+        className={`chatbot-container ${isMinimized ? "minimized" : ""}`}>
+        <div className="chat-messages">
+          {messages.map((message, index) => (
+            <div
+              key={index}
+              className={`message ${
+                message.sender === "user" ? "user-message" : "bot-message"
+              }`}>
+              {(() => {
+                const parsed = extractJSONFromMessage(message.text);
+                if (parsed) {
+                  return (
+                    <>
+                      <div>{parsed.text}</div>
+                      {parsed.buttons?.map((btn, i) => (
+                        <a
+                          href={btn.url}
+                          key={i}
+                          target="_blank"
+                          rel="noopener noreferrer">
+                          <button className="chatbot-button">{btn.text}</button>
+                        </a>
+                      ))}
+                    </>
+                  );
+                }
+
+                return <>{message.text}</>;
+              })()}
+              {message.sender === "bot" &&
+                index === messages.length - 1 &&
+                isTyping && <span className="typing-indicator">▋</span>}
+            </div>
+          ))}
+          <div ref={messagesEndRef} />
+        </div>
+
+        <form onSubmit={handleSubmit} className="chat-input-form">
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Type a message..."
+            className="chat-input"
+            disabled={isTyping}
+          />
+          <button
+            type="submit"
+            className="chat-send-button"
+            disabled={isTyping}>
+            Send
+          </button>
+        </form>
       </div>
-      <form onSubmit={handleSubmit} className="chat-input-form">
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Type a message..."
-          className="chat-input"
-          style={{
-            fontSize: `${minFontSize}px`,
-            padding: `${minPadding}px`,
-          }}
-          disabled={isTyping}
-        />
-        <button
-          type="submit"
-          className="chat-send-button"
-          style={{
-            fontSize: `${minFontSize}px`,
-            padding: `${minPadding}px ${minPadding * 1.5}px`,
-          }}
-          disabled={isTyping}>
-          Send
-        </button>
-      </form>
-    </div>
+      {overlayContent && (
+        <>
+          <div className={`webpage-overlay ${isMinimized ? "visible" : ""}`}>
+            <AIPageRenderer html={overlayContent} />
+          </div>
+          <button onClick={handleCloseOverlay} className="close-button">
+            Close
+          </button>
+        </>
+      )}
+    </>
   );
 }
 

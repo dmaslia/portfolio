@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -12,12 +16,16 @@
 }
 
 /* Global box-sizing */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: inherit;
 }
 
 /* Root layout control */
-html, body, #root {
+html,
+body,
+#root {
   margin: 0;
   padding: 0;
   width: 100vw;
@@ -32,12 +40,31 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #f7f5f2;
+  background-color: transparent;
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   min-width: 320px;
   max-width: 100vw;
   min-height: 100vh;
   max-height: 100vh;
+}
+
+/* Remove any default text colors */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+span,
+div {
+  color: inherit;
+}
+
+/* Remove any default background colors */
+section,
+div {
+  background-color: inherit;
 }
 
 a {
