@@ -8,3 +8,4 @@ cd llama.cpp
 cmake -B build -DGGML_CUDA=ON
 cmake --build build --config Release
 export HUGGINGFACE_HUB_TOKEN=***REMOVED_HUGGINGFACE_TOKEN***
+pip3 install llama-cpp-python --force-reinstall --upgrade
