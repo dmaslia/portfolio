@@ -26,3 +26,15 @@ Thumbs.db
 
 venv/
 start*
+# Secrets — never commit (added after credential-exposure cleanup)
+keys
+access_token
+*.pem
+*.key
+*.p12
+*.pfx
+credentials.json
+secrets.json
+.env
+.env.*
+!.env.example
